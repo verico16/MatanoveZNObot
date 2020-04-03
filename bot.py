@@ -1,6 +1,7 @@
 import telebot;
+#import random;
 
-TOKEN = '123'
+TOKEN = '1184413942:AAFUBjVItCCweXDXbMEBp8thmlqS8RM3_vw'
 bot = telebot.TeleBot(TOKEN);
 
 @bot.message_handler(commands=['start'])
@@ -14,24 +15,34 @@ def send_help_message(message):
 
 @bot.message_handler(commands=['report'])
 def report_message(message):
-	bot.reply_to(message, '@mataner @andead422 @dimaborak @Gazelka @nporMaTar @melkii_pumba');
+	bot.reply_to(message, '@mataner @andead422 @dimaborak @Gazelka @nporMaTeR @melkii_pumba');
 	if (message.chat.type == 'supergroup'):
 		bot.send_message(message.chat.id, 'Розбійник в @matan_help');
 
 @bot.message_handler(commands=['question'])
 def question_message(message):
-	bot.reply_to(message, '@mataner @andead422 @dimaborak @Gazelka @nporMaTar @melkii_pumba');
+	bot.reply_to(message, '@mataner @andead422 @dimaborak @Gazelka @nporMaTeR @melkii_pumba');
 	if (message.chat.type == 'supergroup'):
 		bot.send_message(message.chat.id, 'Є питання в @matan_help');
 
-#@bot.message_handler(content_types=['text'])
-#def send_text(message):
- #   if message.text == '!report':
- #       bot.send_message(message.chat.id, '@mataner @andead422 @dimaborak @Gazelka')
- #       bot.send_message(-1001418192939, 'Зайдіть в Матанове')
-#
- #   elif message.text == '!helper':Є питання
- #       bot.send_message(message.chat.id, 'Нова задача в Матановому')
+@bot.message_handler(content_types=['new_chat_members'])
+def hello_message(message): 
+	bot.reply_to(message, '*Вітаю в Матановому і так інше*')
+
+
+#перша версія команди /tast	
+#isSolving = False;
+#@bot.message_handler(command=['task'])
+#def task_text(message):
+#    if not isSolving:
+#        a = random.randint(1, 10)
+#        path = "Data/Tasks/2/Questions/".replace('/', '\\')+str(a)+".png"
+#         with open(path, "r") as file:
+#            ph = file.read()
+#        bot.send_photo(message.chat.id, photo=ph)
+#    	print(path)
+
+
 
 bot.polling()
 
