@@ -1,7 +1,7 @@
 import telebot;
 #import random;
 
-TOKEN = '1184413942:AAFUBjVItCCweXDXbMEBp8thmlqS8RM3_vw'
+TOKEN = '123'
 bot = telebot.TeleBot(TOKEN);
 
 @bot.message_handler(commands=['start'])
