@@ -1,57 +1,61 @@
 import telebot;
-#import random;
 
-TOKEN = '123'
+TOKEN = 'token'
 bot = telebot.TeleBot(TOKEN);
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    bot.send_message(message.chat.id, 'Привіт! Я допомагаю в групі  @matan_help. Поки що у мене зовсім малий функціонал. Прошу не спамити команди в групу без поважної причини)')
+    bot.send_message(message.chat.id, 'Привіт! Я допомагаю в групі  @matan_help')
     bot.send_message(message.chat.id, 'Бажаю усім 200 балів на ЗНО)')
+
+#команди
+helpText = """ /report - повідомити про порушення
+/question - якщо виникло питання
+/task - розв'язуйте задачі, стань першим в рейтингу
+/stat - статистика чату
+"""
 @bot.message_handler(commands=['help'])
-def send_help_message(message):
-	bot.send_message(message.chat.id, 'Командою "/questiоn" ви можете попросиди допомоги з якоюсь задачею');
-	bot.send_message(message.chat.id, 'Командою "/repоrt" ви можете повідомити про порушення, один з адмінів прийде на допомогу');
+def help_message(message):
+	bot.send_message(message.chat.id, helpText);
+	
 
 @bot.message_handler(commands=['report'])
 def report_message(message):
 	bot.reply_to(message, '@mataner @andead422 @dimaborak @Gazelka @nporMaTeR @melkii_pumba');
 	if (message.chat.type == 'supergroup'):
-		bot.send_message(message.chat.id, 'Розбійник в @matan_help');
+		bot.send_message(-1001418192939, 'Розбійник в @matan_help');
 
 @bot.message_handler(commands=['question'])
 def question_message(message):
 	bot.reply_to(message, '@mataner @andead422 @dimaborak @Gazelka @nporMaTeR @melkii_pumba');
 	if (message.chat.type == 'supergroup'):
-		bot.send_message(message.chat.id, 'Є питання в @matan_help');
+		bot.send_message(-1001418192939, 'Є питання в @matan_help');
+
+# Новий учасник групи зайшов в чат
+helloText = """Вітаю в @matan_help ✋
+
+Головні правила чату:
+➡️Не ображати інших учасників
+➡️Допомагати іншим учасникам, якщо маєте змогу
+➡️Якщо вам потрібна допомога, то просто попросіть
+➡️За рекламу інших сторінок - бан🚫
+
+/help - доступні команди
+
+Бажаємо вам 200 балів на ЗНО!"""
+
+PrevHelloMessageId = 51437 # рандомні цифри, номер повідомлення
+NewHelloMessageId = 51438 # message_id
 
 @bot.message_handler(content_types=['new_chat_members'])
 def hello_message(message): 
-	bot.reply_to(message, '*Вітаю в Матановому і так інше*')
-
-
-#перша версія команди /tast	
-#isSolving = False;
-#@bot.message_handler(command=['task'])
-#def task_text(message):
-#    if not isSolving:
-#        a = random.randint(1, 10)
-#        path = "Data/Tasks/2/Questions/".replace('/', '\\')+str(a)+".png"
-#         with open(path, "r") as file:
-#            ph = file.read()
-#        bot.send_photo(message.chat.id, photo=ph)
-#    	print(path)
-
+	bot.reply_to(message, helloText)
+	global PrevHelloMessageId 
+	global NewHelloMessageId 
+	PrevHelloMessageId = int(NewHelloMessageId)
+	NewHelloMessageId = int(message.message_id) + 1 
+	bot.delete_message(message.chat.id, PrevHelloMessageId) 
 
 
 bot.polling()
-
-
-
-
-
-
-
-
-
 
