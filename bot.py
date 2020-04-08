@@ -1,6 +1,14 @@
 import telebot
 import random
 import time
+import sqlite3 as sql
+
+con = sql.connect('Matanove.db')
+cur = con.cursor()
+cur.execute("CREATE TABLE IF NOT EXISTS `identify` (`name` STRING, `surname` STRING, `user_id` INTEGER)")
+cur.execute("CREATE TABLE IF NOT EXISTS `stat` (`qty` INTEGER, `user_id` INTEGER)")
+con.commit()
+cur.close()
 
 TOKEN = 'token'
 bot = telebot.TeleBot(TOKEN)
@@ -148,7 +156,7 @@ def send_text(message):
 		isVal=True
 	except ValueError:
 		isVal=False
-	print(message.text)
+	# print(message.text)
 	if isVal:
 		if isSolving and float(txt) == float(rightAnswer):
 			bot.reply_to(message, '*Вітаємо!* _Ви першим розв\'язали задачу рівня ' + str(level) +' за ' + str(int(tm1)-int(tm)) + ' с, і отримуєте _*+' + str(pts()) + '*_ до Вашого інтелектуального рейтингу_',parse_mode="Markdown")
@@ -173,6 +181,26 @@ def handle_docs_photo(message):
 			f.write('\n' + str(add_ans))
 		except Exception as e:
 			bot.reply_to(message,e)
+
+@bot.message_handler(content_types=[""'video_note', 'voice', 'text', 'sticker', 'photo', 'audio', 'document',
+                                    'video', 'location', 'contact', 'new_chat_members', 'left_chat_member'""])
+def count_msg(message):
+    con_sql = sql.connect('Matanove.db')
+    cur_sql = con_sql.cursor()
+    name = (message.from_user.first_name, "")[str(message.from_user.first_name) == "None"]
+    surname = (message.from_user.last_name, "")[str(message.from_user.last_name) == "None"]
+    user_id = message.from_user.id
+    # print(f"{message.from_user.username} posted '{message.content_type}' content")
+    cur_sql.execute(f"SELECT `user_id` FROM `identify` WHERE `user_id` = '{user_id}'")
+    user_id_list = cur_sql.fetchall()
+    # print(user_id)
+    if len(user_id_list) > 0:
+        cur_sql.execute(f"UPDATE `stat` SET `qty` = `qty` + 1 WHERE `user_id` = '{user_id}'")
+    else:
+        cur_sql.execute(f"INSERT INTO `identify` VALUES ('{name}', '{surname}', '{user_id}')")
+        cur_sql.execute(f"INSERT INTO `stat` VALUES (1, '{user_id}')")
+    con_sql.commit()
+    cur_sql.close()
 	
 bot.polling()
 
