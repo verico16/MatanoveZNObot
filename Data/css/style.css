@@ -1,0 +1,137 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    color: #4a6385;
+    font-size: 14px;
+    background: url(..//images/background.png) top center / 200px 200px repeat local padding-box ;
+}
+a{
+    color: #000;
+    text-decoration: none;
+    display: inline-block;
+}
+.container{
+    max-width: 1170px;
+    margin: 0 auto;
+    padding: 0 ;
+}
+.header_inner{
+    display: flex;
+    justify-content: space-between;
+    min-height: 87px;
+    align-items: center;
+    border: 1px solid #e7e7e7;
+    background-color: #f3f3f3
+}
+.logo{
+    margin: 10px;
+    padding: 0;
+    width: 200px;
+    height: 76px;
+    align-items: center;
+}
+
+.logo img{
+    left:50%;
+    top:50%;
+    max-width:100%;
+    max-height: 100%;
+}
+.menu_list{
+    display: flex;
+}
+.menu_list li {
+    align-items: stretch;
+    margin:  0 20px;
+}
+.menu_list a{
+    font-size: 16px;
+    color: #2f3f54;
+    font-weight: 700;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+
+
+
+.main_inner {
+    height: 300px;
+    padding: 20px;
+    background-color: #fff; 
+}
+.table {
+    color: #2f3f54;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    padding: 5px;
+}
+table {
+    border: 2px solid grey;
+    width: 800px;
+}
+td,th {
+    border: 2px solid grey;
+    margin: 20px;
+}
+
+
+.footer {
+}
+.footer_inner {
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    height: 87px;
+    align-items: center;
+    border: 1px solid #e7e7e7;
+    background-color: #f3f3f3
+}
+.footer_text {
+    max-width: 200px;
+    font-size: 16px;
+    color: #2f3f54;
+    font-weight: 700;
+    font-family: 'Open Sans', sans-serif;
+}
+.footer_ssylki {
+    min-width: 510px;
+    display: flex;
+}
+.ssylka-cell {
+    height: 34px;
+}
+.ssylka{
+    display: block;
+    min-width: 165px;
+}
+.ssylka div {
+    display: flex;
+    align-items: center;
+}
+.footer-img {
+    margin: 5px;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+}
+.footer-img img {
+    left:50%;
+    top:50%;
+    max-width:100%;
+    max-height: 100%;
+}
+.ssylka_text {
+    font-size: 12px;
+    color: #2f3f54;
+    font-weight: 700;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+
+
