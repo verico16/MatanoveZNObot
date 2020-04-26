@@ -3,6 +3,10 @@ import random
 import time
 import sqlite3 as sql
 
+TOKEN = '1184413942:AAFUBjVItCCweXDXbMEBp8thmlqS8RM3_vw'
+bot = telebot.TeleBot(TOKEN)
+
+'''
 con = sql.connect('Data/Matanove.db')
 cur = con.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS `identify` (`name` STRING, `surname` STRING, `user_id` INTEGER)")
@@ -10,8 +14,6 @@ cur.execute("CREATE TABLE IF NOT EXISTS `stat` (`qty` INTEGER, `user_id` INTEGER
 con.commit()
 cur.close()
 
-TOKEN = ''
-bot = telebot.TeleBot(TOKEN)
 path = ""
 isSolving = False
 rightAnswer = 0
@@ -21,8 +23,8 @@ isAdd = False
 add_level = 0
 add_ans = 0
 add_lvls_list = [0, 0, 0, 0]
-PrevHelloMessageId = 51437  # рандомні цифри, номер повідомлення
-NewHelloMessageId = 51438  # message_id
+PrevHelloMessageId = 101437  # рандомні цифри, номер повідомлення
+NewHelloMessageId = 101438  # message_id
 helloText = """Вітаю в @matan_help ✋
 Головні правила чату:
 ➡️Не ображати інших учасників
@@ -246,6 +248,5 @@ def intelligence(message, intel):
     con_sql.commit()
     cur_sql.close()
 
-
+'''
 bot.infinity_polling()
-
