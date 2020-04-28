@@ -6,7 +6,7 @@ import threading
 lock = threading.Lock()
 # python test.py
 # python d:\\test\matanbot\bot.py
-TOKEN = '1184413942:AAFUBjVItCCweXDXbMEBp8thmlqS8RM3_vw'
+
 bot = telebot.TeleBot(TOKEN)
 
 conn = sqlite3.connect('test.db', check_same_thread = False)
