@@ -3,7 +3,7 @@ import random
 import time
 import sqlite3 as sql
 
-TOKEN = '1184413942:AAFUBjVItCCweXDXbMEBp8thmlqS8RM3_vw'
+
 bot = telebot.TeleBot(TOKEN)
 
 '''
