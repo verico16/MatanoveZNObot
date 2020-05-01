@@ -1,19 +1,13 @@
 import telebot
 import random
 import time
-import sqlite3 as sql
-
+import pymysql
+from collections import deque
 
 bot = telebot.TeleBot(TOKEN)
 
-'''
-con = sql.connect('Data/Matanove.db')
-cur = con.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS `identify` (`name` STRING, `surname` STRING, `user_id` INTEGER)")
-cur.execute("CREATE TABLE IF NOT EXISTS `stat` (`qty` INTEGER, `user_id` INTEGER, `intel` INTEGER DEFAULT 0)")
-con.commit()
-cur.close()
 
+q = deque()
 path = ""
 isSolving = False
 rightAnswer = 0
@@ -148,12 +142,55 @@ def add_command(message):
     add_lvls_list[add_level - 1] += 1
     f.close()
     bot.reply_to(message, 'Ожидаю фото...')
+    
+
+@bot.message_handler(commands=['top'])
+def top_10(message):
+    top_table = []
+    sort = message.text[5:]
+    sort = sort.replace(" ", "")
+    # print(sort)
+    conn = pymysql.connect(host="localhost", user="andrii", password="password", database="Matanove")
+    cur = conn.cursor()
+    if sort == "msg":
+        cur.execute(f"SELECT * FROM stat ORDER BY qty DESC")
+        top_list = cur.fetchmany(size=10)
+        # print(top_list)
+        # вот отсюда
+        for top_list_user in top_list:
+            # print(top_list_user)
+            top_id = int(top_list_user[1])
+            # print(top_id)
+            cur.execute(f"SELECT t1.name, t1.surname, t2.qty, t2.intel FROM identify=t1, stat=t2 WHERE t1.user_id = t2.user_id AND t1.user_id = '{top_id}'")
+            top_name = cur.fetchall()
+            # print(top_name)
+            top_table.append(top_name[0])
+
+        print(top_table)
+        msg = ""
+        for line in top_name[0]:
+            print(line)
+            msg = msg + str(line[0]) + ' ' + str(line[1]) + ' ' + str(line[2]) + ' ' + str(line[3])
+            # msg = msg + str(line)
+        bot.reply_to(message, 'ім\'я, прізвище, кіл-сть повідомлень, інт. рейтинг \n'
+                     + msg
+                     )
+    #     до сюда всё скопировать и вставить
+    elif sort == "intel":
+        cur.execute(f"SELECT * FROM stat ORDER BY intel DESC")
+        top_list = cur.fetchmany(size=10)
+    #     сюда
+    else:
+        bot.reply_to(message,
+                     'Вказані невірні аргументи. Аргументом може слугувати лише msg або intel')
+    conn.commit()
+    cur.close()
 
 
 @bot.message_handler(content_types=[""'video_note', 'voice', 'sticker', 'audio', 'document', 'photo', 'text',
                                     'video', 'location', 'contact', 'new_chat_members', 'left_chat_member'""])
 def sorting(message):
-    count_msg(message)
+    queue(message)
     if message.content_type == 'new_chat_members':
         hello_message(message)
     elif message.content_type == 'text':
@@ -216,37 +253,56 @@ def handle_docs_photo(message):
             bot.reply_to(message, e)
 
 
-def count_msg(message):
-    con_sql = sql.connect('Data/Matanove.db')
-    cur_sql = con_sql.cursor()
-    name = (message.from_user.first_name, "")[str(message.from_user.first_name) == "None"]
-    surname = (message.from_user.last_name, "")[str(message.from_user.last_name) == "None"]
-    user_id = message.from_user.id
-    # print(f"{message.from_user.username} posted '{message.content_type}' content")
-    cur_sql.execute(f"SELECT `user_id` FROM `identify` WHERE `user_id` = '{user_id}'")
-    user_id_list = cur_sql.fetchall()
-    # print(user_id)
-    if len(user_id_list) == 1:
-        # print(user_id, "    1")
-        cur_sql.execute(f"UPDATE `stat` SET `qty` = `qty` + 1 WHERE `user_id` = '{user_id}'")
+def queue(message):
+    # if message.chat.id == -1001415917929:
+    if message.chat.id == -1001418192939:
+        q.append(message)
+        while len(q) > 0:
+            mssg = q.popleft()
+            conn = pymysql.connect(host="localhost", user="andrii", password="password", database="Matanove")
+            cur = conn.cursor()
+            name = (str(mssg.from_user.first_name), "")[str(mssg.from_user.first_name) == "None"]
+            surname = (str(mssg.from_user.last_name), "")[str(mssg.from_user.last_name) == "None"]
+            user_id = mssg.from_user.id
+            cur.execute(f"SELECT user_id FROM identify WHERE user_id = '{user_id}'")
+            user_id_list = cur.fetchall()
+            if len(user_id_list) == 1:
+                # print(name + "1")
+                cur.execute(f"UPDATE stat SET qty = qty + 1 WHERE user_id = '{user_id}'")
+            elif len(user_id_list) == 0:
+                # print(name + "2")
+                cur.execute(f"INSERT INTO identify VALUES ('{name}', '{surname}', '{user_id}')")
+                cur.execute(f"INSERT INTO stat (qty, user_id) VALUES (1, '{user_id}')")
+            else:
+                # print(name + "3")
+                cur.execute(f"SELECT * FROM stat WHERE user_id = '{user_id}'")
+                user_false_list = cur.fetchone()
+                cur.execute(f"DELETE FROM stat WHERE user_id = '{user_id}'")
+                cur.execute(f"INSERT INTO stat VALUES ('{user_false_list[0]}', '{user_false_list[1]}', '{user_false_list[2]}')")
+                cur.execute(f"UPDATE stat SET qty = qty + 1 WHERE user_id = '{user_id}'")
+                cur.execute(f"SELECT * FROM identify WHERE user_id = '{user_id}'")
+                user_false_list1 = cur.fetchone()
+                cur.execute(f"DELETE FROM identify WHERE user_id = '{user_id}'")
+                cur.execute(f"INSERT INTO identify VALUES ('{user_false_list1[0]}', '{user_false_list1[1]}', '{user_false_list1[2]}')")
+            conn.commit()
+            cur.close()
     else:
-        # print(user_id, "    2")
-        cur_sql.execute(f"INSERT INTO `identify` VALUES ('{name}', '{surname}', '{user_id}')")
-        cur_sql.execute(f"INSERT INTO `stat` (`qty`, `user_id`) VALUES (1, '{user_id}')")
-    con_sql.commit()
-    cur_sql.close()
+        pass
+
+
+
 
 
 def intelligence(message, intel):
     # print(intel)
-    con_sql = sql.connect('Data/Matanove.db')
-    cur_sql = con_sql.cursor()
+    conn = pymysql.connect(host="localhost", user="andrii", password="password", database="Matanove")
+    cur = conn.cursor()
     user_id = message.from_user.id
     query = "UPDATE `stat` SET `intel` = `intel` + {} WHERE `user_id` = '{}'".format(intel, user_id)
     # print(query)
-    cur_sql.execute(query)
-    con_sql.commit()
-    cur_sql.close()
+    cur.execute(query)
+    conn.commit()
+    cur.close()
 
 '''
 bot.infinity_polling()
